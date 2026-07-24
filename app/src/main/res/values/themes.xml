@@ -1,9 +1,13 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.TheWeddingPath" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
-    </style>
+<style name="Base.Theme.TheWeddingPath" parent="Theme.Material3.DayNight.NoActionBar">
+    <!-- Define your primary theme colors using attributes -->
+    <item name="colorPrimary">@color/wedding_foliage_green</item> <!-- Primary color for primary button -->
+    <item name="colorOnPrimary">#FFFFFF</item> <!-- Text color on primary button -->
 
-    <style name="Theme.TheWeddingPath" parent="Base.Theme.TheWeddingPath" />
+    <item name="colorTertiary">@color/wedding_rose_pink</item> <!-- Accent for the outlined button/text -->
+    <item name="colorOnTertiaryContainer">@color/wedding_crimson_red</item> <!-- Title Text -->
+
+    <!-- For neutral text elements in the card -->
+    <item name="colorOnSurfaceVariant">@color/wedding_stone_grey</item>
+</style>
 </resources>
