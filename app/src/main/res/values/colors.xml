@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="wedding_crimson_red">#E75D5D</color>
+    <color name="wedding_rose_pink">#E91E63</color>
+    <color name="wedding_foliage_green">#4CAF50</color>
+    <color name="wedding_stone_grey">#616161</color>
+    <color name="wedding_frosted_surface">#D9FFFFFF</color>
+    <color name="wedding_text_shadow">#B3000000</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 </resources>
