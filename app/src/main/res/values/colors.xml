@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="wedding_crimson_red">#E75D5D</color>
-    <color name="wedding_rose_pink">#E91E63</color>
-    <color name="wedding_foliage_green">#4CAF50</color>
+    <color name="wedding_burnt_coral">#A6433F</color>
+    <color name="wedding_deep_rose">#C2185B</color>
+    <color name="wedding_deep_foliage">#2E7D32</color>
     <color name="wedding_stone_grey">#616161</color>
     <color name="wedding_frosted_surface">#D9FFFFFF</color>
     <color name="wedding_text_shadow">#B3000000</color>

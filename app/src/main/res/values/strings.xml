@@ -1,4 +1,12 @@
 <resources>
     <string name="app_name">The Wedding Path</string>
     <string name="img_desc_wedding_arch">A lush garden path beneath a floral wedding arch.</string>
+    <string name="App_Title">The Wedding Path</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="login_help">Already on the path?</string>
+    <string name="login_button">Continue your journey</string>
+    <string name="divider">—  or  —</string>
+    <string name="new_account_help">New to the path?</string>
+    <string name="new_account_button">Begin your journey</string>
 </resources>

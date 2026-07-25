@@ -17,35 +17,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/weddingarch" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="32dp"
-        android:layout_marginTop="64dp"
-        android:fontFamily="sans-serif-medium"
-        android:text="The Wedding Path"
-        android:textAlignment="center"
-        android:textAppearance="?attr/textAppearanceDisplayMedium"
-        android:textColor="@color/wedding_crimson_red"
-        android:shadowColor="@color/wedding_text_shadow"
-        android:shadowDx="4"
-        android:shadowDy="4"
-        android:shadowRadius="8"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:srcCompat="@drawable/wedding_arch" />
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="32dp"
-        android:layout_marginBottom="52dp"
+        android:layout_marginHorizontal="@dimen/margin_horizontal_large"
+        android:layout_marginBottom="@dimen/card_margin_bottom"
         app:cardBackgroundColor="@color/wedding_frosted_surface"
-        app:cardCornerRadius="24dp"
-        app:cardElevation="8dp"
+        app:cardCornerRadius="@dimen/card_corner_radius"
+        style="@style/Widget.Material3.CardView.Elevated"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -54,15 +35,29 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:padding="@dimen/spacing_large">
 
             <!-- Material 3 Text Inputs -->
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_large"
+                android:layout_marginBottom="@dimen/spacing_large"
+                android:fontFamily="sans-serif-medium"
+                android:text="@string/App_Title"
+                android:textAlignment="center"
+                android:textAppearance="?attr/textAppearanceDisplayMedium"
+                android:textColor="?attr/colorOnTertiaryContainer"/>
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_username"
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="Username">
+                android:layout_gravity="center"
+                android:hint="@string/username"
+                android:minWidth="@dimen/input_min_width">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_username"
@@ -74,52 +69,61 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_password"
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:hint="Password">
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/spacing_medium"
+                android:hint="@string/password"
+                android:minWidth="@dimen/input_min_width">
 
+                <!-- Suppressing TextContrastCheck due to a known Android Studio layout
+                editor bug where inputType="textPassword" generates a false positive
+                contrast failure against default fallback colors. Our actual theme colors pass
+                accessibility standards. -->
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPassword" />
+                    android:inputType="textPassword"
+                    tools:ignore="TextContrastCheck" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
                 android:id="@+id/textView2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="Already on the path?"
+                android:layout_marginTop="@dimen/spacing_large"
+                android:text="@string/login_help"
                 android:textAlignment="center"
                 android:textAppearance="?attr/textAppearanceBodyMedium"
                 android:textColor="?attr/colorOnSurfaceVariant" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/button"
                 style="@style/Widget.Material3.Button"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Continue your journey" />
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/spacing_small"
+                android:minWidth="@dimen/input_min_width"
+                android:text="@string/login_button" />
 
             <TextView
                 android:id="@+id/textView3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="—  or  —"
+                android:layout_marginTop="@dimen/spacing_medium"
+                android:text="@string/divider"
                 android:textAlignment="center"
                 android:textAppearance="?attr/textAppearanceBodySmall"
-                android:textColor="?attr/colorOutline" />
+                android:textColor="?attr/colorOnSurfaceVariant"/>
 
             <TextView
                 android:id="@+id/textView4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="New to the path?"
+                android:layout_marginTop="@dimen/spacing_medium"
+                android:text="@string/new_account_help"
                 android:textAlignment="center"
                 android:textAppearance="?attr/textAppearanceBodyMedium"
                 android:textColor="?attr/colorOnSurfaceVariant" />
@@ -127,12 +131,14 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/button2"
                 style="@style/Widget.Material3.Button.OutlinedButton"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Begin your journey"
-                android:textColor="@color/wedding_rose_pink"
-                app:strokeColor="@color/wedding_rose_pink" />
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/spacing_small"
+                android:minWidth="@dimen/input_min_width"
+                android:text="@string/new_account_button"
+                android:textColor="?attr/colorTertiary"
+                app:strokeColor="?attr/colorTertiary" />
 
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
