@@ -6,6 +6,7 @@
     android:layout_height="wrap_content">
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/stone_card_container"
         android:layout_width="@dimen/input_min_width"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
