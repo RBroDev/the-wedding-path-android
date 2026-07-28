@@ -1,42 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginHorizontal="@dimen/spacing_medium"
-    android:layout_marginVertical="@dimen/spacing_small"
-    app:cardCornerRadius="@dimen/stone_corner_radius"
-    app:cardElevation="@dimen/stone_elevation"
-    style="@style/Widget.Material3.CardView.Elevated">
+    android:layout_height="wrap_content">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="@dimen/input_min_width"
         android:layout_height="wrap_content"
-        android:minHeight="@dimen/stone_RL_height">
+        android:layout_gravity="start"
+        android:layout_marginHorizontal="@dimen/spacing_medium"
+        android:layout_marginVertical="@dimen/spacing_small"
+        app:cardCornerRadius="@dimen/stone_corner_radius"
+        app:cardElevation="@dimen/stone_elevation"
+        style="@style/Widget.Material3.CardView.Elevated">
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/stone_RL_height"
-            android:contentDescription="@null"
-            android:scaleType="centerCrop"
-            android:src="@drawable/stone" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/stone_RL_height"
-            android:background="@color/black_overlay_55" />
-
-        <TextView
-            android:id="@+id/tv_vendor_name"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:paddingHorizontal="@dimen/spacing_medium"
-            android:textColor="@android:color/white"
-            android:textAppearance="?attr/textAppearanceTitleMedium"
-            tools:text="Florist" />
+            android:minHeight="@dimen/stone_RL_height">
 
-    </RelativeLayout>
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/stone_RL_height"
+                android:contentDescription="@null"
+                android:scaleType="centerCrop"
+                android:src="@drawable/stone" />
 
-</com.google.android.material.card.MaterialCardView>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/stone_RL_height"
+                android:background="@color/black_overlay_55" />
+
+            <TextView
+                android:id="@+id/tv_vendor_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:paddingHorizontal="@dimen/spacing_medium"
+                android:textColor="@android:color/white"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                tools:text="Florist" />
+
+        </RelativeLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</FrameLayout>
