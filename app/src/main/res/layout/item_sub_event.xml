@@ -19,7 +19,7 @@
         <TextView
             android:id="@+id/tv_event_name"
             android:layout_width="0dp"
-            android:layout_height="21dp"
+            android:layout_height="wrap_content"
             android:text="@string/event_name"
             android:textAppearance="?attr/textAppearanceTitleMedium"
             android:textColor="?attr/colorOnSecondary"
