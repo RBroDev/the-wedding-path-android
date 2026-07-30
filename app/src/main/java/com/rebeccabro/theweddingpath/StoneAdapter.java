@@ -46,7 +46,8 @@ public class StoneAdapter extends RecyclerView.Adapter<StoneAdapter.StoneViewHol
 
     @Override
     public void onBindViewHolder(@NonNull StoneViewHolder holder, int position) {
-        holder.vendorName.setText(vendorList.get(position));
+        String currentItem = vendorList.get(position);
+        holder.vendorName.setText(currentItem);
 
         // extract layout parameters to manipulate the card's gravity within the FrameLayout
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) holder.cardContainer.getLayoutParams();
@@ -57,8 +58,19 @@ public class StoneAdapter extends RecyclerView.Adapter<StoneAdapter.StoneViewHol
         } else {
             params.gravity = Gravity.END;
         }
-
         holder.cardContainer.setLayoutParams(params);
+
+        // evaluate data state to dynamically shift visual weight and denote milestone completion
+        if (currentItem.contains("(Booked)")) {
+            // completed state: fully opaque to draw user focus and reward progression
+            holder.cardContainer.setAlpha(1.0f);
+        } else if (currentItem.equals("+ Add New Vendor")) {
+            // action state: highly translucent to visually recede and act as an empty slot placeholder
+            holder.cardContainer.setAlpha(0.4f);
+        } else {
+            // Pending state: Semi-translucent default for unpopulated milestones
+            holder.cardContainer.setAlpha(0.7f);
+        }
     }
     
     @Override
