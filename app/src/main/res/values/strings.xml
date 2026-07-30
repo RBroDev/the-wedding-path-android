@@ -9,4 +9,16 @@
     <string name="divider">—  or  —</string>
     <string name="new_account_help">New to the path?</string>
     <string name="new_account_button">Begin your journey</string>
+    <string name="vendor_name">Vendor Name</string>
+    <string name="contact_person">Contact Person</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="address">Address</string>
+    <string name="notes">Notes</string>
+    <string name="add_event">+ Add Event</string>
+    <string name="delete_vendor">Delete Vendor</string>
+    <string name="vendor_info">Vendor Info</string>
+    <string name="appointments_amp_deadlines"><![CDATA[Appointments & Deadlines]]></string>
+    <string name="event_name">Event Name</string>
+    <string name="date_time">Date / Time</string>
+    <string name="delete_event">Delete Event</string>
 </resources>
