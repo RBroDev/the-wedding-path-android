@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Base.Theme.TheWeddingPath" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Define your primary theme colors using attributes -->
-        <item name="colorPrimary">@color/wedding_deep_foliage</item>
-        <item name="colorOnPrimary">#FFFFFF</item>
 
-        <item name="colorTertiary">@color/wedding_deep_rose</item>
-        <item name="colorOnTertiaryContainer">@color/wedding_burnt_coral</item>
+        <item name="colorPrimary">@color/wedding_deep_moss</item>
+        <item name="colorOnPrimary">@color/white</item>
 
-        <!-- For neutral text elements in the card -->
-        <item name="colorOnSurfaceVariant">@color/wedding_stone_grey</item>
+        <item name="colorSecondary">@color/wedding_steel_slate</item>
+        <item name="colorOnSecondary">@color/white</item>
+
+        <item name="colorTertiary">@color/wedding_wildflower_red</item>
+
+        <item name="android:colorBackground">@color/wedding_frosted_surface</item>
+        <item name="colorSurface">@color/wedding_frosted_surface</item>
+        <item name="colorOnSurface">@color/black</item>
+        <item name="colorSurfaceVariant">@color/wedding_stone_grey</item>
+
+        <item name="colorError">@color/wedding_brick_red</item>
+        <item name="colorOnError">@color/white</item>
+
     </style>
 </resources>
