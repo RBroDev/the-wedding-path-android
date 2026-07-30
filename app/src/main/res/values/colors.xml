@@ -4,9 +4,10 @@
     <color name="wedding_deep_rose">#C2185B</color>
     <color name="wedding_deep_foliage">#2E7D32</color>
     <color name="wedding_stone_grey">#616161</color>
-    <color name="wedding_frosted_surface">#D9FFFFFF</color>
+    <color name="wedding_frosted_surface">#CCFFFFFF</color>
     <color name="wedding_text_shadow">#B3000000</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="black_overlay_55">#55000000</color>
+
 </resources>

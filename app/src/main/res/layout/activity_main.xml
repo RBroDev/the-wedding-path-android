@@ -11,13 +11,13 @@
         android:id="@+id/imageView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:contentDescription="@string/img_desc_wedding_arch"
+        android:contentDescription="@string/img_desc_grass_path"
         android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/wedding_arch" />
+        app:srcCompat="@drawable/grass_path" />
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
