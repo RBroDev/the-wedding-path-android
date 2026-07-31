@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:fitsSystemWindows="true"
     android:background="@drawable/grass_path">
 
@@ -38,6 +39,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/spacing_medium"
                 android:layout_marginTop="@dimen/spacing_medium"
+                app:layout_constraintWidth_max="@dimen/txt_constraintWidth_max"
                 android:hint="@string/vendor_name"
                 android:textColorHint="?attr/colorSurfaceVariant"
                 app:boxStrokeColor="?attr/colorSecondary"
@@ -62,6 +64,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/spacing_medium"
                 android:layout_marginTop="@dimen/spacing_small"
+                app:layout_constraintWidth_max="@dimen/txt_constraintWidth_max"
                 android:hint="@string/contact_person"
                 android:textColorHint="?attr/colorSurfaceVariant"
                 app:boxStrokeColor="?attr/colorSecondary"
@@ -86,6 +89,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/spacing_medium"
                 android:layout_marginTop="@dimen/spacing_small"
+                app:layout_constraintWidth_max="@dimen/txt_constraintWidth_max"
                 android:hint="@string/phone_number"
                 android:textColorHint="?attr/colorSurfaceVariant"
                 app:boxStrokeColor="?attr/colorSecondary"
@@ -110,6 +114,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/spacing_medium"
                 android:layout_marginTop="@dimen/spacing_small"
+                app:layout_constraintWidth_max="@dimen/txt_constraintWidth_max"
                 android:hint="@string/address"
                 android:textColorHint="?attr/colorSurfaceVariant"
                 app:boxStrokeColor="?attr/colorSecondary"
@@ -134,6 +139,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/spacing_medium"
                 android:layout_marginTop="@dimen/spacing_small"
+                app:layout_constraintWidth_max="@dimen/txt_constraintWidth_max"
                 android:hint="@string/notes"
                 android:textColorHint="?attr/colorSurfaceVariant"
                 app:boxStrokeColor="?attr/colorSecondary"
@@ -159,12 +165,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/spacing_medium"
-                android:layout_marginTop="@dimen/spacing_large"
+                android:layout_marginTop="@dimen/spacing_small"
                 android:text="@string/appointments_amp_deadlines"
                 android:textAppearance="?attr/textAppearanceTitleLarge"
                 android:textColor="?attr/colorPrimary"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@id/btn_add_event"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/til_notes" />
 
@@ -174,11 +179,25 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/spacing_medium"
-                android:layout_marginTop="@dimen/spacing_medium"
                 android:text="@string/add_event"
+                app:layout_constraintBottom_toBottomOf="@id/tv_events_header"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/til_notes"
-                app:layout_constraintBottom_toBottomOf="@id/tv_events_header" />
+                app:layout_constraintTop_toTopOf="@id/tv_events_header" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switch_sms_reminder"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/spacing_medium"
+                android:layout_marginTop="@dimen/spacing_small"
+                android:text="@string/send_sms_reminder_on_day_of_event"
+                android:textAppearance="?attr/textAppearanceBodyLarge"
+                android:textColor="?attr/colorPrimary"
+                app:layout_constraintWidth_max="@dimen/btn_constraintWidth_max"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_events_header"
+                app:useMaterialThemeColors="true" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_sub_events"
@@ -193,7 +212,7 @@
                 tools:itemCount="3"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/btn_add_event" />
+                app:layout_constraintTop_toBottomOf="@id/switch_sms_reminder" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_delete_vendor"
@@ -205,6 +224,7 @@
                 android:text="@string/delete_vendor"
                 android:textColor="?attr/colorOnError"
                 app:backgroundTint="?attr/colorError"
+                app:layout_constraintWidth_max="@dimen/btn_constraintWidth_max"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
