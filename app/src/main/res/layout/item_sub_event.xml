@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--    Design-time workaround: 48dp margin prevents Android Studio
 from falsely flagging this list item for System UI overlap.-->
 <com.google.android.material.card.MaterialCardView
@@ -26,7 +25,7 @@ from falsely flagging this list item for System UI overlap.-->
             android:text="@string/event_name"
             android:textAppearance="?attr/textAppearanceTitleMedium"
             android:textColor="?attr/colorOnSecondary"
-            app:layout_constraintEnd_toStartOf="@id/btn_delete_event"
+            app:layout_constraintEnd_toStartOf="@id/icon_sms_active"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -37,9 +36,21 @@ from falsely flagging this list item for System UI overlap.-->
             android:text="@string/date_time"
             android:textAppearance="?attr/textAppearanceBodyMedium"
             android:textColor="?attr/colorOnSecondary"
-            app:layout_constraintEnd_toStartOf="@id/btn_delete_event"
+            app:layout_constraintEnd_toStartOf="@id/icon_sms_active"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_event_name" />
+
+        <ImageView
+            android:id="@+id/icon_sms_active"
+            android:layout_width="@dimen/spacing_large"
+            android:layout_height="@dimen/spacing_large"
+            android:layout_marginEnd="@dimen/spacing_medium"
+            android:contentDescription="@string/sms_notification_enabled"
+            android:src="@drawable/ic_notifications_active"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btn_delete_event"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="?attr/colorOnSecondary" />
 
         <ImageButton
             android:id="@+id/btn_delete_event"

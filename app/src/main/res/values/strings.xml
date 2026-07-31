@@ -21,4 +21,6 @@
     <string name="event_name">Event Name</string>
     <string name="date_time">Date / Time</string>
     <string name="delete_event">Delete Event</string>
+    <string name="send_sms_reminder_on_day_of_event">Send SMS Reminder on Day of Event</string>
+    <string name="sms_notification_enabled">SMS Notification Enabled</string>
 </resources>
