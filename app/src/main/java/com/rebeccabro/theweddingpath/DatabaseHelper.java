@@ -10,6 +10,7 @@ package com.rebeccabro.theweddingpath;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.content.ContentValues;
 
 /**
  * Helper class that manages database creation and version management for The Wedding Path application.
@@ -97,5 +98,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_EVENT_DETAILS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER_CREDENTIALS);
         onCreate(db);
+    }
+
+    /**
+     * Inserts a new user into the user_credentials table.
+     * Utilizes ContentValues to prevent SQL injection vulnerabilities.
+     *
+     * @param username The string inputted by the user for their username.
+     * @param password The string inputted by the user for their password.
+     * @return true if the insertion was successful, false if it failed (e.g., username already exists).
+     */
+    public boolean addUser(String username, String password) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        // Bind data securely to prevent SQL injection
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_USERNAME, username);
+        values.put(COLUMN_PASSWORD, password);
+
+        long result = db.insert(TABLE_USER_CREDENTIALS, null, values);
+        db.close();
+
+        return result != -1;
     }
 }
