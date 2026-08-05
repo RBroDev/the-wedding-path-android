@@ -1,5 +1,6 @@
 package com.rebeccabro.theweddingpath;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -11,12 +12,12 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-/**
+/*
  * Name: Rebecca Scranton
- * Date: August 3, 2026
- * Description: MainActivity acts as the initial entry point for The Wedding Path.
- * It manages user authentication and first-time account creation by securely
- * capturing user input and communicating with the local SQLite database.
+ * Date: August 4, 2026
+ * Description: Acts as the primary entry point for The Wedding Path application.
+ * Manages user authentication and account registration via local SQLite persistence,
+ * and routes authenticated sessions to the main dashboard.
  */
 public class MainActivity extends AppCompatActivity {
 
@@ -27,10 +28,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Configure modern edge-to-edge window insets
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -42,28 +42,47 @@ public class MainActivity extends AppCompatActivity {
         etUsername = findViewById(R.id.et_username);
         etPassword = findViewById(R.id.et_password);
         Button btnRegister = findViewById(R.id.button2);
+        Button btnLogin = findViewById(R.id.button);
 
+        // Handle new user registration
         btnRegister.setOnClickListener(v -> {
             String user = etUsername.getText().toString().trim();
             String pass = etPassword.getText().toString().trim();
 
-            // Input validation
             if (user.isEmpty() || pass.isEmpty()) {
                 Toast.makeText(MainActivity.this, "Please enter both a username and password.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (dbHelper.addUser(user, pass)) {
+                Toast.makeText(MainActivity.this, "Journey Begun! Account created.", Toast.LENGTH_SHORT).show();
+                etUsername.setText("");
+                etPassword.setText("");
             } else {
+                Toast.makeText(MainActivity.this, "Username already exists. Please choose another.", Toast.LENGTH_LONG).show();
+            }
+        });
 
-                // Attempt data persistence
-                boolean isInserted = dbHelper.addUser(user, pass);
+        // Handle existing user authentication
+        btnLogin.setOnClickListener(v -> {
+            String user = etUsername.getText().toString().trim();
+            String pass = etPassword.getText().toString().trim();
 
-                if (isInserted) {
-                    Toast.makeText(MainActivity.this, "Journey Begun! Account created.", Toast.LENGTH_SHORT).show();
-                    // Reset UI state on success
-                    etUsername.setText("");
-                    etPassword.setText("");
-                } else {
-                    // Insertion failed (typically due to SQLite UNIQUE constraint violation)
-                    Toast.makeText(MainActivity.this, "Username already exists. Please choose another.", Toast.LENGTH_LONG).show();
-                }
+            if (user.isEmpty() || pass.isEmpty()) {
+                Toast.makeText(MainActivity.this, "Please enter both username and password.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (dbHelper.checkUser(user, pass)) {
+                Toast.makeText(MainActivity.this, "Welcome to The Wedding Path!", Toast.LENGTH_SHORT).show();
+
+                Intent intent = new Intent(MainActivity.this, DashboardActivity.class);
+                startActivity(intent);
+
+                // Terminate activity to prevent back-navigation to the authentication flow
+                finish();
+            } else {
+                Toast.makeText(MainActivity.this, "Invalid credentials. Please try again.", Toast.LENGTH_LONG).show();
             }
         });
     }
