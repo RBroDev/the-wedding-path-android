@@ -8,7 +8,7 @@
     tools:context=".MainActivity">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/iv_background"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:contentDescription="@string/img_desc_grass_path"
@@ -38,7 +38,7 @@
             android:padding="@dimen/spacing_large">
 
             <TextView
-                android:id="@+id/textView"
+                android:id="@+id/tv_app_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/spacing_large"
@@ -57,8 +57,8 @@
                 android:layout_gravity="center"
                 android:hint="@string/username"
                 android:minWidth="@dimen/input_min_width"
-                app:boxStrokeColor="?attr/colorSecondary"
-                app:hintTextColor="?attr/colorSecondary">
+                app:boxStrokeColor="?attr/colorSurfaceVariant"
+                app:hintTextColor="?attr/colorOnSurface">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_username"
@@ -75,12 +75,10 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="@dimen/spacing_medium"
                 android:hint="@string/password"
-                android:minWidth="@dimen/input_min_width">
+                android:minWidth="@dimen/input_min_width"
+                app:boxStrokeColor="?attr/colorSurfaceVariant"
+                app:hintTextColor="?attr/colorOnSurface">
 
-                <!-- Suppressing TextContrastCheck due to a known Android Studio layout
-                editor bug where inputType="textPassword" generates a false positive
-                contrast failure against default fallback colors. Our actual theme colors pass
-                accessibility standards. -->
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_password"
                     android:layout_width="match_parent"
@@ -90,7 +88,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
-                android:id="@+id/textView2"
+                android:id="@+id/tv_login_help"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/spacing_large"
@@ -100,7 +98,7 @@
                 android:textColor="?attr/colorOnSurfaceVariant" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/button"
+                android:id="@+id/btn_login"
                 style="@style/Widget.Material3.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -111,7 +109,7 @@
                 app:backgroundTint="?attr/colorSecondary"/>
 
             <TextView
-                android:id="@+id/textView3"
+                android:id="@+id/tv_divider"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/spacing_medium"
@@ -121,7 +119,7 @@
                 android:textColor="?attr/colorOnSurfaceVariant" />
 
             <TextView
-                android:id="@+id/textView4"
+                android:id="@+id/tv_new_account_help"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/spacing_medium"
@@ -131,7 +129,7 @@
                 android:textColor="?attr/colorOnSurfaceVariant" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/button2"
+                android:id="@+id/btn_register"
                 style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
