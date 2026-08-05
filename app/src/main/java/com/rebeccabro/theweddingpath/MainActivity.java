@@ -41,8 +41,9 @@ public class MainActivity extends AppCompatActivity {
 
         etUsername = findViewById(R.id.et_username);
         etPassword = findViewById(R.id.et_password);
-        Button btnRegister = findViewById(R.id.button2);
-        Button btnLogin = findViewById(R.id.button);
+
+        Button btnRegister = findViewById(R.id.btn_register);
+        Button btnLogin = findViewById(R.id.btn_login);
 
         // Handle new user registration
         btnRegister.setOnClickListener(v -> {
