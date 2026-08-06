@@ -45,13 +45,31 @@ public class MainActivity extends AppCompatActivity {
         Button btnRegister = findViewById(R.id.btn_register);
         Button btnLogin = findViewById(R.id.btn_login);
 
-        // Handle new user registration
+        // Process new user account creation
         btnRegister.setOnClickListener(v -> {
             String user = etUsername.getText().toString().trim();
             String pass = etPassword.getText().toString().trim();
 
+            // Extract the local-part of an email address to use as a clean display name
+            if (user.contains("@")) {
+                user = user.split("@")[0];
+            }
+
+            // Ensure required credential fields are populated
             if (user.isEmpty() || pass.isEmpty()) {
                 Toast.makeText(MainActivity.this, "Please enter both a username and password.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Enforce hard length constraints to prevent buffer/memory exploitation
+            if (user.length() > 30 || pass.length() > 64) {
+                Toast.makeText(MainActivity.this, "Security Error: Input exceeds maximum allowed length.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Sanitize input to allow only alphanumeric characters, periods, and standard email symbols
+            if (!user.matches("^[a-zA-Z0-9.@]+$")) {
+                Toast.makeText(MainActivity.this, "Security Error: Usernames can only contain letters, numbers, and periods.", Toast.LENGTH_LONG).show();
                 return;
             }
 
@@ -64,13 +82,31 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Handle existing user authentication
+        // Authenticate existing users
         btnLogin.setOnClickListener(v -> {
             String user = etUsername.getText().toString().trim();
             String pass = etPassword.getText().toString().trim();
 
+            // Format input to match the database username structure
+            if (user.contains("@")) {
+                user = user.split("@")[0];
+            }
+
+            // Verify inputs are present before querying the database
             if (user.isEmpty() || pass.isEmpty()) {
                 Toast.makeText(MainActivity.this, "Please enter both username and password.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Reject invalid lengths immediately to bypass unnecessary database overhead
+            if (user.length() > 30 || pass.length() > 64) {
+                Toast.makeText(MainActivity.this, "Invalid credentials. Please try again.", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            // Block malformed strings or illegal characters
+            if (!user.matches("^[a-zA-Z0-9.@]+$")) {
+                Toast.makeText(MainActivity.this, "Invalid credentials. Please try again.", Toast.LENGTH_LONG).show();
                 return;
             }
 
@@ -80,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, DashboardActivity.class);
                 startActivity(intent);
 
-                // Terminate activity to prevent back-navigation to the authentication flow
+                // Terminate the authentication activity to prevent reverse navigation
                 finish();
             } else {
                 Toast.makeText(MainActivity.this, "Invalid credentials. Please try again.", Toast.LENGTH_LONG).show();

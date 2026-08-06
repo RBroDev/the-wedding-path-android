@@ -4,6 +4,10 @@ plugins {
 
 android {
     namespace 'com.rebeccabro.theweddingpath'
+
+    // Enterprise Stability Constraint:
+    // Intentionally targeting SDK 36. Do not upgrade to SDK 37 until the
+    // newer API is proven fully stable and required by project parameters.
     compileSdk {
         version = release(36) {
             minorApiLevel = 1
@@ -13,6 +17,8 @@ android {
     defaultConfig {
         applicationId "com.rebeccabro.theweddingpath"
         minSdk 28
+        // Will evaluate Android 15/16 (SDK 37+)
+        // compatibility modes prior to final production release.
         targetSdk 36
         versionCode 1
         versionName "1.0"
@@ -40,6 +46,7 @@ dependencies {
     implementation libs.constraintlayout
     implementation libs.material
     implementation libs.recyclerview
+    implementation libs.jbcrypt
     testImplementation libs.junit
     androidTestImplementation libs.espresso.core
     androidTestImplementation libs.ext.junit
