@@ -110,4 +110,92 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return isValid;
     }
+
+    /**
+     * CREATE: Persists a new vendor and event record to the database.
+     * Utilizes ContentValues to map inputs to the event_details schema safely.
+     *
+     * @param userId The ID of the authenticated user.
+     * @param vendorName The business name of the vendor.
+     * @param address The physical address of the vendor.
+     * @param phone The contact phone number (passed as long to prevent integer overflow).
+     * @param contact The primary point of contact.
+     * @param notes Additional details or notes.
+     * @param subEventTitle The title of the specific milestone/event.
+     * @param timestamp The date/time of the event.
+     * @return true if the insertion was successful, false otherwise.
+     */
+
+    public boolean addEvent(int userId, String vendorName, String address, long phone, String contact, String notes, String subEventTitle, long timestamp) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put(COLUMN_FK_USER_ID, userId);
+        values.put(COLUMN_VENDOR_NAME, vendorName);
+        values.put(COLUMN_VENDOR_ADDRESS, address);
+        values.put(COLUMN_VENDOR_PHONE, phone);
+        values.put(COLUMN_VENDOR_CONTACT, contact);
+        values.put(COLUMN_VENDOR_NOTES, notes);
+        values.put(COLUMN_SUB_EVENT_TITLE, subEventTitle);
+        values.put(COLUMN_TIMESTAMP, timestamp);
+
+        long result = db.insert(TABLE_EVENT_DETAILS, null, values);
+        db.close();
+        return result != -1;
+    }
+
+    /**
+     * READ: Retrieves all vendor events associated with a specific user.
+     *
+     * @param userId The ID of the authenticated user.
+     * @return A Cursor containing the user's populated event records.
+     */
+    public Cursor getUserEvents(int userId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_EVENT_DETAILS + " WHERE " + COLUMN_FK_USER_ID + " = ?";
+        return db.rawQuery(query, new String[]{String.valueOf(userId)});
+    }
+
+    /**
+     * UPDATE: Modifies an existing vendor/event record in the database.
+     *
+     * @param eventId The unique identifier of the specific event to update.
+     * @param vendorName The updated business name of the vendor.
+     * @param address The updated physical address.
+     * @param phone The updated phone number.
+     * @param contact The updated point of contact.
+     * @param notes Updated notes.
+     * @param subEventTitle The updated milestone/event title.
+     * @param timestamp The updated date/time.
+     * @return true if the update modified at least one row, false otherwise.
+     */
+    public boolean updateEvent(int eventId, String vendorName, String address, long phone, String contact, String notes, String subEventTitle, long timestamp) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put(COLUMN_VENDOR_NAME, vendorName);
+        values.put(COLUMN_VENDOR_ADDRESS, address);
+        values.put(COLUMN_VENDOR_PHONE, phone);
+        values.put(COLUMN_VENDOR_CONTACT, contact);
+        values.put(COLUMN_VENDOR_NOTES, notes);
+        values.put(COLUMN_SUB_EVENT_TITLE, subEventTitle);
+        values.put(COLUMN_TIMESTAMP, timestamp);
+
+        int result = db.update(TABLE_EVENT_DETAILS, values, COLUMN_EVENT_ID + " = ?", new String[]{String.valueOf(eventId)});
+        db.close();
+        return result > 0;
+    }
+
+    /**
+     * DELETE: Removes a specific event record from the database entirely.
+     *
+     * @param eventId The unique identifier of the event to delete.
+     * @return true if the deletion successfully removed a row, false otherwise.
+     */
+    public boolean deleteEvent(int eventId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int result = db.delete(TABLE_EVENT_DETAILS, COLUMN_EVENT_ID + " = ?", new String[]{String.valueOf(eventId)});
+        db.close();
+        return result > 0;
+    }
 }
