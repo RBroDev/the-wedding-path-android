@@ -7,7 +7,11 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Adapter for rendering the sub-event list on the Vendor Detail screen.
@@ -61,14 +65,30 @@ public class SubEventAdapter extends RecyclerView.Adapter<SubEventAdapter.ViewHo
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         SubEvent event = eventList.get(position);
 
-        // Bind data to views
-        holder.tvTitle.setText(event.getTitle());
-        holder.tvDate.setText(String.valueOf(event.getTimestamp()));
+        // 1. Unpack the database string to display ONLY the event name on the card
+        String rawTitle = event.getTitle();
+        String displayName = rawTitle;
+
+        // Strip out the Notes if they exist
+        if (displayName.contains(" | ")) {
+            displayName = displayName.substring(0, displayName.indexOf(" | "));
+        }
+        // Strip out the Location if it exists
+        if (displayName.contains(" @ ")) {
+            displayName = displayName.substring(0, displayName.indexOf(" @ "));
+        }
+
+        // Bind the clean name to the view
+        holder.tvTitle.setText(displayName);
+
+        // 2. Format the raw timestamp into a human-readable date and time string
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy • hh:mm a", Locale.getDefault());
+        holder.tvDate.setText(sdf.format(new Date(event.getTimestamp())));
 
         // Route delete action to the listener
         holder.btnDelete.setOnClickListener(v -> listener.onDeleteClick(event, position));
 
-        // Route row click action to the listener as an update trigger
+        // Route row click action to the listener to open the details dialog
         holder.itemView.setOnClickListener(v -> listener.onUpdateClick(event));
     }
 

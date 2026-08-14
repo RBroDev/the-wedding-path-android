@@ -1,16 +1,26 @@
 package com.rebeccabro.theweddingpath;
 
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Activity responsible for managing and displaying detailed information for a specific vendor.
@@ -66,7 +76,7 @@ public class VendorDetailActivity extends AppCompatActivity {
         Button btnDeleteVendor = findViewById(R.id.btn_delete_vendor);
 
         btnSaveVendor.setOnClickListener(v -> saveVendorToDatabase(true));
-        btnAddEvent.setOnClickListener(v -> saveVendorToDatabase(false));
+        btnAddEvent.setOnClickListener(v -> showAddEventDialog());
         btnDeleteVendor.setOnClickListener(v -> deleteEntireVendor());
     }
 
@@ -93,37 +103,181 @@ public class VendorDetailActivity extends AppCompatActivity {
     }
 
     /**
-     * Processes an update to an existing sub-event.
-     * Validates user input before committing changes to the database.
+     * Displays a dialog to capture detailed sub-event information (Date, Time, Location)
+     * and saves it to the database.
+     */
+    private void showAddEventDialog() {
+        String currentVendorName = etVendorName.getText() != null ? etVendorName.getText().toString().trim() : "";
+        if (currentVendorName.isEmpty()) {
+            Toast.makeText(this, "Please enter and save a Vendor Name first.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (selectedVendorName == null || selectedVendorName.isEmpty()) {
+            saveVendorToDatabase(false);
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View view = getLayoutInflater().inflate(R.layout.dialog_add_event, null);
+        builder.setView(view);
+
+        EditText etName = view.findViewById(R.id.et_event_name);
+        EditText etLocation = view.findViewById(R.id.et_event_location);
+        EditText etDialogNotes = view.findViewById(R.id.et_event_notes);
+        Button btnDate = view.findViewById(R.id.btn_pick_date);
+        Button btnTime = view.findViewById(R.id.btn_pick_time);
+
+        Calendar eventCalendar = Calendar.getInstance();
+
+        btnDate.setOnClickListener(v -> new DatePickerDialog(this, (datePicker, year, month, day) -> {
+            eventCalendar.set(Calendar.YEAR, year);
+            eventCalendar.set(Calendar.MONTH, month);
+            eventCalendar.set(Calendar.DAY_OF_MONTH, day);
+            btnDate.setText(new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(eventCalendar.getTime()));
+        }, eventCalendar.get(Calendar.YEAR), eventCalendar.get(Calendar.MONTH), eventCalendar.get(Calendar.DAY_OF_MONTH)).show());
+
+        btnTime.setOnClickListener(v -> new TimePickerDialog(this, (timePicker, hourOfDay, minute) -> {
+            eventCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+            eventCalendar.set(Calendar.MINUTE, minute);
+            btnTime.setText(new SimpleDateFormat("hh:mm a", Locale.getDefault()).format(eventCalendar.getTime()));
+        }, eventCalendar.get(Calendar.HOUR_OF_DAY), eventCalendar.get(Calendar.MINUTE), false).show());
+
+        builder.setPositiveButton("Save Event", (dialog, which) -> {
+            String subName = etName.getText() != null ? etName.getText().toString().trim() : "";
+            String location = etLocation.getText() != null ? etLocation.getText().toString().trim() : "";
+            String subNotes = etDialogNotes.getText() != null ? etDialogNotes.getText().toString().trim() : "";
+
+            if (subName.isEmpty()) {
+                Toast.makeText(this, "Event Name is required.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String packedTitle = subName;
+            if (!location.isEmpty()) packedTitle += " @ " + location;
+            if (!subNotes.isEmpty()) packedTitle += " | " + subNotes;
+
+            String vName = etVendorName.getText() != null ? etVendorName.getText().toString().trim() : "";
+            String vContact = etContact.getText() != null ? etContact.getText().toString().trim() : "";
+            String vAddress = etAddress.getText() != null ? etAddress.getText().toString().trim() : "";
+            long vPhone = 0;
+            try {
+                String p = etPhone.getText() != null ? etPhone.getText().toString().trim() : "";
+                if (!p.isEmpty()) vPhone = Long.parseLong(p);
+            } catch (Exception ignored) {}
+
+            int userIdToUse = realUserId != -1 ? realUserId : 1;
+            long timestamp = eventCalendar.getTimeInMillis();
+
+            boolean isInserted = dbHelper.addEvent(
+                    userIdToUse, vName, vAddress, vPhone, vContact, "", packedTitle, timestamp
+            );
+
+            if (isInserted) {
+                Toast.makeText(this, "Event Scheduled!", Toast.LENGTH_SHORT).show();
+                loadSubEvents();
+            } else {
+                Toast.makeText(this, "Error saving event.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+        builder.create().show();
+    }
+
+    /**
+     * Processes an update to an existing sub-event by launching an edit dialog.
+     * Unpacks the packed title string to pre-fill the input fields.
      *
      * @param event The SubEvent object being updated.
      */
     private void handleEventUpdate(SubEvent event) {
-        String updatedTitle = event.getTitle() + " (Updated)";
-        String name = etVendorName.getText() != null ? etVendorName.getText().toString().trim() : "";
-        String address = etAddress.getText() != null ? etAddress.getText().toString().trim() : "";
-        String phoneStr = etPhone.getText() != null ? etPhone.getText().toString().trim() : "";
-        String contact = etContact.getText() != null ? etContact.getText().toString().trim() : "";
-        String notes = etNotes.getText() != null ? etNotes.getText().toString().trim() : "";
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View view = getLayoutInflater().inflate(R.layout.dialog_add_event, null);
+        builder.setView(view);
 
-        long phone = 0;
-        if (!phoneStr.isEmpty()) {
-            try {
-                phone = Long.parseLong(phoneStr);
-            } catch (NumberFormatException e) {
-                Toast.makeText(VendorDetailActivity.this, "Please enter a valid phone number (numbers only).", Toast.LENGTH_SHORT).show();
+        EditText etName = view.findViewById(R.id.et_event_name);
+        EditText etLocation = view.findViewById(R.id.et_event_location);
+        EditText etDialogNotes = view.findViewById(R.id.et_event_notes);
+        Button btnDate = view.findViewById(R.id.btn_pick_date);
+        Button btnTime = view.findViewById(R.id.btn_pick_time);
+
+        // Unpack the Title String to populate the edit form
+        String packedTitle = event.getTitle();
+        String parsedName = packedTitle;
+        String parsedLocation = "";
+        String parsedNotes = "";
+
+        if (packedTitle.contains(" | ")) {
+            int notesIndex = packedTitle.indexOf(" | ");
+            parsedNotes = packedTitle.substring(notesIndex + 3);
+            packedTitle = packedTitle.substring(0, notesIndex);
+        }
+        if (packedTitle.contains(" @ ")) {
+            int locIndex = packedTitle.indexOf(" @ ");
+            parsedLocation = packedTitle.substring(locIndex + 3);
+            parsedName = packedTitle.substring(0, locIndex);
+        }
+
+        etName.setText(parsedName);
+        etLocation.setText(parsedLocation);
+        etDialogNotes.setText(parsedNotes);
+
+        // Set up the Calendar and Buttons to reflect the event's currently saved time
+        Calendar eventCalendar = Calendar.getInstance();
+        eventCalendar.setTimeInMillis(event.getTimestamp());
+
+        btnDate.setText(new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(eventCalendar.getTime()));
+        btnTime.setText(new SimpleDateFormat("hh:mm a", Locale.getDefault()).format(eventCalendar.getTime()));
+
+        btnDate.setOnClickListener(v -> new DatePickerDialog(this, (datePicker, year, month, day) -> {
+            eventCalendar.set(Calendar.YEAR, year);
+            eventCalendar.set(Calendar.MONTH, month);
+            eventCalendar.set(Calendar.DAY_OF_MONTH, day);
+            btnDate.setText(new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(eventCalendar.getTime()));
+        }, eventCalendar.get(Calendar.YEAR), eventCalendar.get(Calendar.MONTH), eventCalendar.get(Calendar.DAY_OF_MONTH)).show());
+
+        btnTime.setOnClickListener(v -> new TimePickerDialog(this, (timePicker, hourOfDay, minute) -> {
+            eventCalendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+            eventCalendar.set(Calendar.MINUTE, minute);
+            btnTime.setText(new SimpleDateFormat("hh:mm a", Locale.getDefault()).format(eventCalendar.getTime()));
+        }, eventCalendar.get(Calendar.HOUR_OF_DAY), eventCalendar.get(Calendar.MINUTE), false).show());
+
+        builder.setPositiveButton("Update Event", (dialog, which) -> {
+            String subName = etName.getText() != null ? etName.getText().toString().trim() : "";
+            String location = etLocation.getText() != null ? etLocation.getText().toString().trim() : "";
+            String subNotes = etDialogNotes.getText() != null ? etDialogNotes.getText().toString().trim() : "";
+
+            if (subName.isEmpty()) {
+                Toast.makeText(this, "Event Name is required.", Toast.LENGTH_SHORT).show();
                 return;
             }
-        }
 
-        boolean isUpdated = dbHelper.updateEvent(
-                event.getId(), name, address, phone, contact, notes, updatedTitle, event.getTimestamp()
-        );
+            // Pack it back up
+            String newPackedTitle = subName;
+            if (!location.isEmpty()) newPackedTitle += " @ " + location;
+            if (!subNotes.isEmpty()) newPackedTitle += " | " + subNotes;
 
-        if (isUpdated) {
-            Toast.makeText(VendorDetailActivity.this, "Event Updated!", Toast.LENGTH_SHORT).show();
-            loadSubEvents();
-        }
+            String vName = etVendorName.getText() != null ? etVendorName.getText().toString().trim() : "";
+            String vContact = etContact.getText() != null ? etContact.getText().toString().trim() : "";
+            String vAddress = etAddress.getText() != null ? etAddress.getText().toString().trim() : "";
+            long vPhone = 0;
+            try {
+                String p = etPhone.getText() != null ? etPhone.getText().toString().trim() : "";
+                if (!p.isEmpty()) vPhone = Long.parseLong(p);
+            } catch (Exception ignored) {}
+
+            boolean isUpdated = dbHelper.updateEvent(
+                    event.getId(), vName, vAddress, vPhone, vContact, "", newPackedTitle, eventCalendar.getTimeInMillis()
+            );
+
+            if (isUpdated) {
+                Toast.makeText(this, "Event Updated!", Toast.LENGTH_SHORT).show();
+                loadSubEvents();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+        builder.create().show();
     }
 
     /**
@@ -182,7 +336,7 @@ public class VendorDetailActivity extends AppCompatActivity {
      * Handles both top-level vendor profile updates and the addition of new sub-events.
      *
      * @param isSaveVendorClick true if the action was triggered by the "Save Vendor" button,
-     *                          false if triggered by "Add Event".
+     *                          false if triggered by "Add Event" (hidden root saving).
      */
     private void saveVendorToDatabase(boolean isSaveVendorClick) {
         String name = etVendorName.getText() != null ? etVendorName.getText().toString().trim() : "";
@@ -235,33 +389,24 @@ public class VendorDetailActivity extends AppCompatActivity {
         }
 
         // Create an anchor record for brand-new vendors.
-        // The "VENDOR_ROOT" title acts as a flag to hide this record from the sub-event UI grid.
         if (selectedVendorName == null || selectedVendorName.isEmpty()) {
             dbHelper.addEvent(userIdToUse, name, address, phone, contact, notes, "VENDOR_ROOT", System.currentTimeMillis());
             selectedVendorName = name;
         }
 
-        // Handle specific button execution paths
         if (isSaveVendorClick) {
             Toast.makeText(this, "Vendor saved successfully!", Toast.LENGTH_SHORT).show();
             finish();
-        } else {
-            dbHelper.addEvent(userIdToUse, name, address, phone, contact, notes, "New Sub-Event", System.currentTimeMillis());
-            loadSubEvents();
-            Toast.makeText(this, "Event added!", Toast.LENGTH_SHORT).show();
         }
     }
 
     /**
-     * Retrieves all sub-events associated with the selected vendor from the database
-     * and refreshes the RecyclerView.
+     * Retrieves all sub-events associated with the selected vendor from the database,
+     * sorts them chronologically, and refreshes the RecyclerView.
      */
+    @SuppressLint("NotifyDataSetChanged")
     private void loadSubEvents() {
-        int oldSize = subEventList.size();
         subEventList.clear();
-        if (oldSize > 0) {
-            adapter.notifyItemRangeRemoved(0, oldSize);
-        }
 
         int userIdToUse = realUserId != -1 ? realUserId : 1;
         Cursor cursor = dbHelper.getUserEvents(userIdToUse);
@@ -278,8 +423,6 @@ public class VendorDetailActivity extends AppCompatActivity {
                     String title = cursor.getString(titleIndex);
 
                     if (selectedVendorName == null || selectedVendorName.isEmpty() || (vName != null && vName.equals(selectedVendorName))) {
-
-                        // Exclude administrative roots and legacy data configurations from the UI
                         if (title != null && !title.equals("VENDOR_ROOT") && !title.equals("Initial Consultation")) {
                             int eventId = cursor.getInt(idIndex);
                             long timestamp = cursor.getLong(timeIndex);
@@ -292,9 +435,9 @@ public class VendorDetailActivity extends AppCompatActivity {
             cursor.close();
         }
 
-        if (!subEventList.isEmpty()) {
-            adapter.notifyItemRangeInserted(0, subEventList.size());
-        }
+        // Sort and apply one clean UI update
+        subEventList.sort(Comparator.comparingLong(SubEvent::getTimestamp));
+        adapter.notifyDataSetChanged();
     }
 
     /**
@@ -302,7 +445,6 @@ public class VendorDetailActivity extends AppCompatActivity {
      * associated with the currently selected vendor.
      */
     private void deleteEntireVendor() {
-        // Exit if attempting to delete an unsaved vendor
         if (selectedVendorName == null || selectedVendorName.isEmpty()) {
             finish();
             return;
