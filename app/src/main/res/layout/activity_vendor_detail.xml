@@ -160,18 +160,31 @@
                     android:textColor="?attr/colorOnSurface" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- NEW: The Primary Save Vendor Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_save_vendor"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/spacing_medium"
+                android:layout_marginTop="@dimen/spacing_medium"
+                android:text="@string/save_vendor"
+                app:layout_constraintWidth_max="@dimen/btn_constraintWidth_max"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/til_notes" />
+
             <TextView
                 android:id="@+id/tv_events_header"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/spacing_medium"
-                android:layout_marginTop="@dimen/spacing_small"
+                android:layout_marginTop="@dimen/spacing_medium"
                 android:text="@string/appointments_amp_deadlines"
                 android:textAppearance="?attr/textAppearanceTitleLarge"
                 android:textColor="?attr/colorPrimary"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/til_notes" />
+                app:layout_constraintTop_toBottomOf="@id/btn_save_vendor" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_add_event"

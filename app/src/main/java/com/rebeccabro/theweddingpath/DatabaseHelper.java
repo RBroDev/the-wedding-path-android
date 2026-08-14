@@ -6,11 +6,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-/*
- * Name: Rebecca Scranton
- * Date: August 4, 2026
- * Description: Manages database creation, version management, and local data persistence for The Wedding Path.
- * Initializes the user_credentials and event_details tables and establishes the core relational schema.
+/**
+ * Manages database creation, version management, and local data persistence.
+ * Initializes the user_credentials and event_details tables and establishes
+ * the core relational schema for the application.
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -53,6 +52,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     COLUMN_TIMESTAMP + " INTEGER, " +
                     "FOREIGN KEY(" + COLUMN_FK_USER_ID + ") REFERENCES " + TABLE_USER_CREDENTIALS + "(" + COLUMN_USER_ID + "))";
 
+    /**
+     * Constructs a new DatabaseHelper instance.
+     *
+     * @param context The application context.
+     */
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -73,9 +77,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
      * Persists a new user credential record to the database.
      *
-     * @param username The requested username
-     * @param password The requested password
-     * @return true if the insertion was successful, false on constraint violation (e.g., duplicate username)
+     * @param username The requested username.
+     * @param password The requested password.
+     * @return true if the insertion was successful, false on constraint violation (e.g., duplicate username).
      */
     public boolean addUser(String username, String password) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -93,39 +97,48 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
      * Authenticates a user against stored database credentials.
      *
-     * @param username The inputted username
-     * @param password The inputted password
-     * @return true if the credentials match an existing record, false otherwise
+     * @param username The inputted username.
+     * @param password The inputted password.
+     * @return The unique database ID of the user if authenticated, or -1 if invalid.
      */
-    public boolean checkUser(String username, String password) {
+    public int checkUser(String username, String password) {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        String query = "SELECT * FROM user_credentials WHERE username = ? AND password = ?";
+        String query = "SELECT " + COLUMN_USER_ID + " FROM " + TABLE_USER_CREDENTIALS +
+                " WHERE " + COLUMN_USERNAME + " = ? AND " + COLUMN_PASSWORD + " = ?";
+
         Cursor cursor = db.rawQuery(query, new String[]{username, password});
 
-        boolean isValid = cursor.getCount() > 0;
+        int userId = -1;
+
+        if (cursor.moveToFirst()) {
+            int idIndex = cursor.getColumnIndex(COLUMN_USER_ID);
+
+            if (idIndex != -1) {
+                userId = cursor.getInt(idIndex);
+            }
+        }
 
         cursor.close();
         db.close();
 
-        return isValid;
+        return userId;
     }
 
     /**
-     * CREATE: Persists a new vendor and event record to the database.
-     * Utilizes ContentValues to map inputs to the event_details schema safely.
+     * Persists a new vendor and event record to the database.
+     * Utilizes ContentValues to safely map inputs to the event_details schema.
      *
-     * @param userId The ID of the authenticated user.
-     * @param vendorName The business name of the vendor.
-     * @param address The physical address of the vendor.
-     * @param phone The contact phone number (passed as long to prevent integer overflow).
-     * @param contact The primary point of contact.
-     * @param notes Additional details or notes.
+     * @param userId        The ID of the authenticated user.
+     * @param vendorName    The business name of the vendor.
+     * @param address       The physical address of the vendor.
+     * @param phone         The contact phone number.
+     * @param contact       The primary point of contact.
+     * @param notes         Additional details or notes.
      * @param subEventTitle The title of the specific milestone/event.
-     * @param timestamp The date/time of the event.
+     * @param timestamp     The date/time of the event.
      * @return true if the insertion was successful, false otherwise.
      */
-
     public boolean addEvent(int userId, String vendorName, String address, long phone, String contact, String notes, String subEventTitle, long timestamp) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -145,7 +158,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * READ: Retrieves all vendor events associated with a specific user.
+     * Retrieves all vendor events associated with a specific user.
      *
      * @param userId The ID of the authenticated user.
      * @return A Cursor containing the user's populated event records.
@@ -157,16 +170,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * UPDATE: Modifies an existing vendor/event record in the database.
+     * Modifies an existing vendor/event record in the database.
      *
-     * @param eventId The unique identifier of the specific event to update.
-     * @param vendorName The updated business name of the vendor.
-     * @param address The updated physical address.
-     * @param phone The updated phone number.
-     * @param contact The updated point of contact.
-     * @param notes Updated notes.
+     * @param eventId       The unique identifier of the specific event to update.
+     * @param vendorName    The updated business name of the vendor.
+     * @param address       The updated physical address.
+     * @param phone         The updated phone number.
+     * @param contact       The updated point of contact.
+     * @param notes         Updated notes.
      * @param subEventTitle The updated milestone/event title.
-     * @param timestamp The updated date/time.
+     * @param timestamp     The updated date/time.
      * @return true if the update modified at least one row, false otherwise.
      */
     public boolean updateEvent(int eventId, String vendorName, String address, long phone, String contact, String notes, String subEventTitle, long timestamp) {
@@ -187,7 +200,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * DELETE: Removes a specific event record from the database entirely.
+     * Removes a specific event record from the database entirely.
      *
      * @param eventId The unique identifier of the event to delete.
      * @return true if the deletion successfully removed a row, false otherwise.

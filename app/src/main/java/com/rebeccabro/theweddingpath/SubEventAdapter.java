@@ -1,12 +1,5 @@
 package com.rebeccabro.theweddingpath;
 
-/*
- * Name: Rebecca Scranton
- * Date: August 13, 2026
- * Description: Adapter for rendering the sub-event grid on the Vendor Detail screen.
- * Handles the UI interactions and routes Update and Delete commands back to the host Activity.
- */
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,19 +9,41 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
+/**
+ * Adapter for rendering the sub-event list on the Vendor Detail screen.
+ * Handles UI binding and routes user interactions back to the host Activity.
+ */
 public class SubEventAdapter extends RecyclerView.Adapter<SubEventAdapter.ViewHolder> {
 
     private final List<SubEvent> eventList;
     private final SubEventClickListener listener;
 
     /**
-     * Interface to pass click events safely back to VendorDetailActivity
+     * Interface definition for callbacks to be invoked when a sub-event is interacted with.
      */
     public interface SubEventClickListener {
+        /**
+         * Called when a sub-event row is clicked to trigger an update.
+         *
+         * @param event The SubEvent object associated with the clicked row.
+         */
         void onUpdateClick(SubEvent event);
+
+        /**
+         * Called when the delete action is triggered for a sub-event.
+         *
+         * @param event    The SubEvent object to delete.
+         * @param position The adapter position of the item being deleted.
+         */
         void onDeleteClick(SubEvent event, int position);
     }
 
+    /**
+     * Constructs a new SubEventAdapter.
+     *
+     * @param eventList The data set containing the sub-events to display.
+     * @param listener  The listener for handling click events on the items.
+     */
     public SubEventAdapter(List<SubEvent> eventList, SubEventClickListener listener) {
         this.eventList = eventList;
         this.listener = listener;
@@ -46,14 +61,14 @@ public class SubEventAdapter extends RecyclerView.Adapter<SubEventAdapter.ViewHo
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         SubEvent event = eventList.get(position);
 
-        // Populate the text views (We will add Date formatting in a later polish pass)
+        // Bind data to views
         holder.tvTitle.setText(event.getTitle());
         holder.tvDate.setText(String.valueOf(event.getTimestamp()));
 
-        // Wire up the Delete button and the Update (Row Click) actions
+        // Route delete action to the listener
         holder.btnDelete.setOnClickListener(v -> listener.onDeleteClick(event, position));
 
-        // Tapping the card itself acts as the "Update" trigger
+        // Route row click action to the listener as an update trigger
         holder.itemView.setOnClickListener(v -> listener.onUpdateClick(event));
     }
 
@@ -62,6 +77,9 @@ public class SubEventAdapter extends RecyclerView.Adapter<SubEventAdapter.ViewHo
         return eventList.size();
     }
 
+    /**
+     * ViewHolder class that holds references to the UI components for individual sub-events.
+     */
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvTitle, tvDate;
         ImageButton btnDelete;
