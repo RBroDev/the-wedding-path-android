@@ -12,10 +12,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-/*
- * Name: Rebecca Scranton
- * Date: August 4, 2026
- * Description: Acts as the primary entry point for The Wedding Path application.
+/**
+ * Primary entry point for The Wedding Path application.
  * Manages user authentication and account registration via local SQLite persistence,
  * and routes authenticated sessions to the main dashboard.
  */
@@ -31,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
+        // Configure edge-to-edge layout to account for system bars
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -41,38 +40,36 @@ public class MainActivity extends AppCompatActivity {
 
         etUsername = findViewById(R.id.et_username);
         etPassword = findViewById(R.id.et_password);
-
         Button btnRegister = findViewById(R.id.btn_register);
         Button btnLogin = findViewById(R.id.btn_login);
 
-        // Process new user account creation
+        // Handle new user registration
         btnRegister.setOnClickListener(v -> {
-            String user = etUsername.getText().toString().trim();
-            String pass = etPassword.getText().toString().trim();
+            String user = etUsername.getText() != null ? etUsername.getText().toString().trim() : "";
+            String pass = etPassword.getText() != null ? etPassword.getText().toString().trim() : "";
 
-            // Extract the local-part of an email address to use as a clean display name
+            // Strip domain if the user enters an email address
             if (user.contains("@")) {
                 user = user.split("@")[0];
             }
 
-            // Ensure required credential fields are populated
+            // Input validation for security and data integrity
             if (user.isEmpty() || pass.isEmpty()) {
                 Toast.makeText(MainActivity.this, "Please enter both a username and password.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            // Enforce hard length constraints to prevent buffer/memory exploitation
             if (user.length() > 30 || pass.length() > 64) {
                 Toast.makeText(MainActivity.this, "Security Error: Input exceeds maximum allowed length.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            // Sanitize input to allow only alphanumeric characters, periods, and standard email symbols
             if (!user.matches("^[a-zA-Z0-9.@]+$")) {
                 Toast.makeText(MainActivity.this, "Security Error: Usernames can only contain letters, numbers, and periods.", Toast.LENGTH_LONG).show();
                 return;
             }
 
+            // Attempt to persist the new user to the database
             if (dbHelper.addUser(user, pass)) {
                 Toast.makeText(MainActivity.this, "Journey Begun! Account created.", Toast.LENGTH_SHORT).show();
                 etUsername.setText("");
@@ -82,41 +79,44 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Authenticate existing users
+        // Handle existing user authentication
         btnLogin.setOnClickListener(v -> {
-            String user = etUsername.getText().toString().trim();
-            String pass = etPassword.getText().toString().trim();
+            String user = etUsername.getText() != null ? etUsername.getText().toString().trim() : "";
+            String pass = etPassword.getText() != null ? etPassword.getText().toString().trim() : "";
 
-            // Format input to match the database username structure
+            // Strip domain if the user enters an email address
             if (user.contains("@")) {
                 user = user.split("@")[0];
             }
 
-            // Verify inputs are present before querying the database
+            // Input validation
             if (user.isEmpty() || pass.isEmpty()) {
                 Toast.makeText(MainActivity.this, "Please enter both username and password.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            // Reject invalid lengths immediately to bypass unnecessary database overhead
             if (user.length() > 30 || pass.length() > 64) {
                 Toast.makeText(MainActivity.this, "Invalid credentials. Please try again.", Toast.LENGTH_LONG).show();
                 return;
             }
 
-            // Block malformed strings or illegal characters
             if (!user.matches("^[a-zA-Z0-9.@]+$")) {
                 Toast.makeText(MainActivity.this, "Invalid credentials. Please try again.", Toast.LENGTH_LONG).show();
                 return;
             }
 
-            if (dbHelper.checkUser(user, pass)) {
+            // Authenticate against local database and retrieve the unique user ID
+            int userId = dbHelper.checkUser(user, pass);
+
+            if (userId != -1) {
                 Toast.makeText(MainActivity.this, "Welcome to The Wedding Path!", Toast.LENGTH_SHORT).show();
 
+                // Route the authenticated session to the Dashboard, passing the unique ID payload
                 Intent intent = new Intent(MainActivity.this, DashboardActivity.class);
+                intent.putExtra("USER_ID", userId);
                 startActivity(intent);
 
-                // Terminate the authentication activity to prevent reverse navigation
+                // Finish this activity to remove it from the back stack so the user cannot "back" into the login screen
                 finish();
             } else {
                 Toast.makeText(MainActivity.this, "Invalid credentials. Please try again.", Toast.LENGTH_LONG).show();

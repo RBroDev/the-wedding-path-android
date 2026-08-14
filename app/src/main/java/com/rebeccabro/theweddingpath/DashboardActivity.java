@@ -1,7 +1,8 @@
 package com.rebeccabro.theweddingpath;
 
+import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
-
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -10,51 +11,91 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-/*
- * Name: Rebecca Scranton
- * Date: July 29, 2026
- * Description: DashboardActivity acts as the primary data hub for "The Wedding Path"
- * application. It is responsible for orchestrating the custom RecyclerView that
- * displays the user's wedding milestones in an organic, winding path UI layout.
+/**
+ * Primary data hub for The Wedding Path application.
+ * Orchestrates the custom RecyclerView that displays the user's saved vendors
+ * in an organic, winding path UI layout by reading from the local SQLite database.
  */
-
 public class DashboardActivity extends AppCompatActivity {
+
+    private List<String> vendorList;
+    private DatabaseHelper dbHelper;
+    private int realUserId = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Enable edge-to-edge display for modern Android window insets
         EdgeToEdge.enable(this);
-
-        // Inflate the dashboard layout containing the RecyclerView
         setContentView(R.layout.activity_dashboard);
 
-        // Bind the RecyclerView component from the XML layout
-        RecyclerView recyclerView = findViewById(R.id.rv_wedding_path);
+        dbHelper = new DatabaseHelper(this);
+        vendorList = new ArrayList<>();
 
-        // Apply a vertical layout manager and tell it to build from the bottom up
+        realUserId = getIntent().getIntExtra("USER_ID", -1);
+
+        // Reserve the first index for the action item to create a new vendor
+        vendorList.add("+ Add New Vendor");
+
+        loadVendorsFromDatabase();
+
+        RecyclerView recyclerView = findViewById(R.id.rv_wedding_path);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setReverseLayout(true);
         recyclerView.setLayoutManager(layoutManager);
 
-        /* * Initialize mock dataset for UI validation.
-         * These specific strings simulate various database states (populated,
-         * pending, and actionable) to test the dynamic alpha-rendering logic
-         * housed within the StoneAdapter.
-         */
-        List<String> testVendors = new ArrayList<>();
-        testVendors.add("Venue (Booked)");
-        testVendors.add("Transportation");
-        testVendors.add("Baker");
-        testVendors.add("DJ / Band");
-        testVendors.add("Florist");
-        testVendors.add("Caterer");
-        testVendors.add("Photographer");
-        testVendors.add("+ Add New Vendor");
+        StoneAdapter adapter = new StoneAdapter(vendorList, vendorName -> {
+            Intent intent = new Intent(DashboardActivity.this, VendorDetailActivity.class);
+            intent.putExtra("USER_ID", realUserId);
 
-        // Instantiate the custom adapter with the mock dataset and attach it to the view
-        StoneAdapter adapter = new StoneAdapter(testVendors);
+            // Pass the selected vendor name to the detail view, or omit for a new vendor entry
+            if (!vendorName.equals("+ Add New Vendor")) {
+                intent.putExtra("VENDOR_NAME", vendorName);
+            }
+
+            startActivity(intent);
+        });
+
         recyclerView.setAdapter(adapter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Refresh the vendor list when returning to the dashboard to reflect any newly added or deleted data
+        vendorList.clear();
+        vendorList.add("+ Add New Vendor");
+        loadVendorsFromDatabase();
+
+        RecyclerView recyclerView = findViewById(R.id.rv_wedding_path);
+        if (recyclerView.getAdapter() != null) {
+            recyclerView.getAdapter().notifyDataSetChanged();
+        }
+    }
+
+    /**
+     * Queries the database for the user's saved events and extracts
+     * distinct vendor names to populate the dynamic path interface.
+     */
+    private void loadVendorsFromDatabase() {
+        int userIdToUse = realUserId != -1 ? realUserId : 1;
+        Cursor cursor = dbHelper.getUserEvents(userIdToUse);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                int nameColumnIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_VENDOR_NAME);
+
+                if (nameColumnIndex != -1) {
+                    String vendorName = cursor.getString(nameColumnIndex) != null ? cursor.getString(nameColumnIndex) : "";
+
+                    // Ensure only distinct, non-empty vendor names are added to the UI list
+                    if (!vendorName.isEmpty() && !vendorList.contains(vendorName)) {
+                        vendorList.add(vendorName);
+                    }
+                }
+            } while (cursor.moveToNext());
+
+            cursor.close();
+        }
     }
 }

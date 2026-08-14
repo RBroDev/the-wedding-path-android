@@ -1,12 +1,5 @@
 package com.rebeccabro.theweddingpath;
 
-/*
- * Name: Rebecca Scranton
- * Date: July 27, 2026
- * Description: Adapter for the Wedding Path RecyclerView. Binds vendor data
- * and alternates card alignment for a winding path UI.
- */
-
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,25 +13,40 @@ import java.util.List;
 
 /**
  * Adapter for the Wedding Path RecyclerView.
- * This class binds vendor data to the UI and alternates the card alignment
- * left and right to create a custom, organic winding path aesthetic.
+ * Binds vendor data to the UI and dynamically alternates card alignment
+ * to create an organic, winding path aesthetic.
  */
 public class StoneAdapter extends RecyclerView.Adapter<StoneAdapter.StoneViewHolder> {
+
     private final List<String> vendorList;
+    private final OnStoneClickListener listener;
 
     /**
-     * Constructor for the StoneAdapter.
-     *
-     * @param vendorList A list of vendor names to populate the path.
+     * Interface definition for a callback to be invoked when a stone is clicked.
      */
-    public StoneAdapter(List<String> vendorList) {
+    public interface OnStoneClickListener {
+        /**
+         * Called when a vendor stone has been clicked.
+         *
+         * @param vendorName The name of the vendor associated with the clicked stone.
+         */
+        void onStoneClick(String vendorName);
+    }
+
+    /**
+     * Constructs a new StoneAdapter.
+     *
+     * @param vendorList The data set containing the vendor names to display.
+     * @param listener   The listener for handling click events on the items.
+     */
+    public StoneAdapter(List<String> vendorList, OnStoneClickListener listener) {
         this.vendorList = vendorList;
+        this.listener = listener;
     }
 
     @NonNull
     @Override
     public StoneViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // inflates the custom FrameLayout wrapper that allows for left/right alignment
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_stone_card, parent, false);
         return new StoneViewHolder(view);
@@ -49,10 +57,9 @@ public class StoneAdapter extends RecyclerView.Adapter<StoneAdapter.StoneViewHol
         String currentItem = vendorList.get(position);
         holder.vendorName.setText(currentItem);
 
-        // extract layout parameters to manipulate the card's gravity within the FrameLayout
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) holder.cardContainer.getLayoutParams();
 
-        // Modulo operator determines if the row is even or odd to create the winding effect
+        // Alternate alignment between Start and End to simulate a winding visual path
         if (position % 2 == 0) {
             params.gravity = Gravity.START;
         } else {
@@ -60,31 +67,28 @@ public class StoneAdapter extends RecyclerView.Adapter<StoneAdapter.StoneViewHol
         }
         holder.cardContainer.setLayoutParams(params);
 
-        // evaluate data state to dynamically shift visual weight and denote milestone completion
-        if (currentItem.contains("(Booked)")) {
-            // completed state: fully opaque to draw user focus and reward progression
-            holder.cardContainer.setAlpha(1.0f);
-        } else if (currentItem.equals("+ Add New Vendor")) {
-            // action state: highly translucent to visually recede and act as an empty slot placeholder
+        // Apply a translucent visual state to distinguish the placeholder action slot
+        if (currentItem.equals("+ Add New Vendor")) {
             holder.cardContainer.setAlpha(0.4f);
         } else {
-            // Pending state: Semi-translucent default for unpopulated milestones
-            holder.cardContainer.setAlpha(0.7f);
+            holder.cardContainer.setAlpha(1.0f);
         }
+
+        holder.itemView.setOnClickListener(v -> listener.onStoneClick(currentItem));
     }
-    
+
     @Override
     public int getItemCount() {
         return vendorList.size();
     }
 
     /**
-     * ViewHolder pattern to cache UI components, improving RecyclerView scroll performance
+     * ViewHolder class that holds references to the UI components for individual vendor stones.
      */
     public static class StoneViewHolder extends RecyclerView.ViewHolder {
         MaterialCardView cardContainer;
         TextView vendorName;
-        
+
         public StoneViewHolder(@NonNull View itemView) {
             super(itemView);
             cardContainer = itemView.findViewById(R.id.stone_card_container);
@@ -92,5 +96,3 @@ public class StoneAdapter extends RecyclerView.Adapter<StoneAdapter.StoneViewHol
         }
     }
 }
-    
-    
