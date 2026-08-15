@@ -14,6 +14,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.switchmaterial.SwitchMaterial; // Added import for the switch
+import android.Manifest;
+import android.content.pm.PackageManager;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.content.ContextCompat;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -34,10 +40,29 @@ public class VendorDetailActivity extends AppCompatActivity {
 
     // UI Components
     private TextInputEditText etVendorName, etContact, etPhone, etAddress, etNotes;
+    private SwitchMaterial switchSmsReminder; // Added switch state variable
 
     // State variables
     private int realUserId = -1;
     private String selectedVendorName = null;
+
+    /**
+     * Handles the system permission dialog response.
+     * Ensures the app continues to function smoothly even if the user denies SMS access.
+     */
+    private final ActivityResultLauncher<String> requestSmsPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    Toast.makeText(this, "SMS Notifications Enabled", Toast.LENGTH_SHORT).show();
+                    // TODO: Activate background scheduling logic for this vendor (Issue #13)
+                } else {
+                    Toast.makeText(this, "SMS Access Denied. The app will continue without text alerts.", Toast.LENGTH_LONG).show();
+                    // The app gracefully continues; UI reverts the SMS toggle to off
+                    if (switchSmsReminder != null) {
+                        switchSmsReminder.setChecked(false);
+                    }
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +96,9 @@ public class VendorDetailActivity extends AppCompatActivity {
         etAddress = findViewById(R.id.et_address);
         etNotes = findViewById(R.id.et_notes);
 
+        // Bind the SMS Switch
+        switchSmsReminder = findViewById(R.id.switch_sms_reminder);
+
         Button btnSaveVendor = findViewById(R.id.btn_save_vendor);
         Button btnAddEvent = findViewById(R.id.btn_add_event);
         Button btnDeleteVendor = findViewById(R.id.btn_delete_vendor);
@@ -78,6 +106,13 @@ public class VendorDetailActivity extends AppCompatActivity {
         btnSaveVendor.setOnClickListener(v -> saveVendorToDatabase(true));
         btnAddEvent.setOnClickListener(v -> showAddEventDialog());
         btnDeleteVendor.setOnClickListener(v -> deleteEntireVendor());
+
+        // Wire up the permission check to the switch toggle
+        switchSmsReminder.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                checkAndRequestSmsPermission();
+            }
+        });
     }
 
     /**
@@ -471,5 +506,20 @@ public class VendorDetailActivity extends AppCompatActivity {
 
         Toast.makeText(this, "Vendor completely deleted.", Toast.LENGTH_SHORT).show();
         finish();
+    }
+
+    /**
+     * Evaluates the current SMS permission state at runtime.
+     * Triggers the system request dialog if access has not yet been granted.
+     */
+    private void checkAndRequestSmsPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
+            // Permission is already granted
+            Toast.makeText(this, "SMS Notifications are already active.", Toast.LENGTH_SHORT).show();
+            // TODO: Activate background scheduling logic for this vendor (Issue #13)
+        } else {
+            // Trigger the system permissions request dialog
+            requestSmsPermissionLauncher.launch(Manifest.permission.SEND_SMS);
+        }
     }
 }
